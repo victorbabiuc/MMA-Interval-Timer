@@ -1,0 +1,172 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222.2 47.4% 11.2%;
+    --foreground: 210 40% 98%;
+    --card: 217.2 32.6% 17.5%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 47.4% 11.2%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 160.1 84.1% 39.4%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 215.3 25% 26.7%;
+    --muted-foreground: 215 16.3% 46.9%;
+    --accent: 188 85.7% 53.3%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 215.3 25% 26.7%;
+    --input: 215.3 25% 26.7%;
+    --ring: 188 85.7% 53.3%;
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Custom gradient backgrounds for timer phases */
+.gradient-work {
+  background: linear-gradient(135deg, #10b981, #0d9488);
+}
+.gradient-rest {
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+}
+.gradient-warning {
+  background: linear-gradient(135deg, #fbbf24, #f97316);
+}
+.gradient-critical {
+  background: linear-gradient(135deg, #ef4444, #f43f5e);
+}
+
+/* Pulse animation for timer */
+@keyframes timer-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+@keyframes critical-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.9; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(239, 68, 68, 0.6); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes confetti-fall {
+  0% { transform: translateY(-100%) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+@keyframes checkmark-draw {
+  from { stroke-dashoffset: 100; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes bg-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.4s ease-out forwards;
+}
+
+.animate-timer-pulse {
+  animation: timer-pulse 1s ease-in-out infinite;
+}
+
+.animate-critical-pulse {
+  animation: critical-pulse 0.5s ease-in-out infinite;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 0.5s ease-in-out infinite;
+}
+
+.animate-bg-pulse {
+  animation: bg-pulse 2s ease-in-out infinite;
+}
+
+/* Confetti pieces */
+.confetti-piece {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  top: -10px;
+  animation: confetti-fall 2.5s ease-in forwards;
+}
+
+/* Hide scrollbars but allow scrolling */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Smooth transitions for all interactive elements */
+.interactive {
+  @apply transition-all duration-200 ease-in-out;
+}
+
+/* Progress ring animation */
+.progress-ring-circle {
+  transition: stroke-dashoffset 1s linear;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .animate-timer-pulse,
+  .animate-critical-pulse,
+  .animate-glow-pulse,
+  .animate-bg-pulse {
+    animation: none;
+  }
+  .interactive {
+    transition: none;
+  }
+  .progress-ring-circle {
+    transition: none;
+  }
+  .confetti-piece {
+    animation: none;
+    display: none;
+  }
+}

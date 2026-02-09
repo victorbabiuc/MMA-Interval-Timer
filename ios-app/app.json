@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "Interval Timer",
+    "slug": "interval-timer",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "backgroundColor": "#0f172a"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.intervaltimer.app",
+      "buildNumber": "1"
+    },
+    "scheme": "interval-timer"
+  }
+}
