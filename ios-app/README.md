@@ -1,6 +1,6 @@
-# Interval Timer – iOS (Expo)
+# MMA Interval Timer – iOS (Expo)
 
-Rebuild of the Interval Timer for iPhone using **Expo (React Native)**.
+Interval timer for MMA, boxing, and workouts. Built with **Expo (React Native)** for iPhone.
 
 ## Run on iPhone
 
@@ -28,7 +28,7 @@ Rebuild of the Interval Timer for iPhone using **Expo (React Native)**.
 
 **Not hearing the timer beep?** Turn volume up and silent switch off; first run needs network for the chime. See **SOUNDS.md** for details.
 
-**App Store.** For building and submitting to the App Store (icon, EAS, Connect), see **LAUNCH.md**.
+**App Store.** Step-by-step: **APP_STORE_STEPS.md**. Ready-to-paste text (description, keywords, privacy): **APP_STORE_COPY.md**. Screenshots: **SCREENSHOTS.md**. Short checklist: **LAUNCH.md**.
 
 ## Project layout
 

@@ -1,6 +1,24 @@
-# App Store launch – Interval Timer (iOS)
+# App Store launch – MMA Interval Timer (iOS)
 
 Single checklist for building and submitting to the App Store. Use this before and during submit.
+
+---
+
+## 0. Push to GitHub first (recommended)
+
+Back up the project and have a clean snapshot before submitting:
+
+1. **Create a new repo** on GitHub (e.g. `interval-timer`). Do **not** add a README or .gitignore (the project already has them).
+2. **From the project root** (the folder that contains `ios-app/`):
+
+   ```bash
+   git remote add origin https://github.com/YOUR_USERNAME/interval-timer.git
+   git push -u origin main
+   ```
+
+   (Use your GitHub URL and branch name if different.)
+
+3. **Add the app icon** (next step) and commit again: `git add ios-app/assets/icon.png && git commit -m "Add app icon" && git push`.
 
 ---
 
@@ -31,7 +49,7 @@ Single checklist for building and submitting to the App Store. Use this before a
 
 ## 4. App Store Connect setup
 
-1. In [App Store Connect](https://appstoreconnect.apple.com), create a new app (e.g. “Interval Timer”).
+1. In [App Store Connect](https://appstoreconnect.apple.com), create a new app (e.g. “MMA Interval Timer”).
 2. Fill in: **Name**, **Subtitle**, **Description**, **Category** (e.g. Health & Fitness or Sports).
 3. **Privacy Policy URL** – Required if you collect user data; for local-only storage a short “We don’t collect personal data” page is enough.
 4. **Screenshots** – At least one per required device size (e.g. 6.7", 6.5", 5.5" for iPhone). Use simulator or device.

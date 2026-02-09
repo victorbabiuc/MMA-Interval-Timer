@@ -35,7 +35,7 @@ export function HomeScreen({
           contentContainerStyle={styles.topScrollContent}
           showsVerticalScrollIndicator={false}
         >
-          <Text style={[styles.title, { color: theme.textPrimary }]}>INTERVAL TIMER</Text>
+          <Text style={[styles.title, { color: theme.textPrimary }]}>MMA INTERVAL TIMER</Text>
           <Text style={[styles.subtitle, { color: theme.textSecondary }]}>Choose your sport or create custom</Text>
 
           <View style={styles.presetRow}>
