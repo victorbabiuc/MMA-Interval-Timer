@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import type { WorkoutStats } from '../lib/types'
 import type { Theme } from '../lib/theme'
 import { formatTime } from '../lib/presets'
 
-const AUTO_GO_HOME_SECONDS = 4
+const AUTO_GO_HOME_SECONDS = 5
 
 type Props = {
   theme: Theme
@@ -16,20 +16,47 @@ type Props = {
 
 export function CompletionScreen({ theme, stats, onRestart, onHome }: Props) {
   const [countdown, setCountdown] = useState(AUTO_GO_HOME_SECONDS)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
-    const t = setTimeout(() => {
+    timeoutRef.current = setTimeout(() => {
       onHome()
     }, AUTO_GO_HOME_SECONDS * 1000)
-    return () => clearTimeout(t)
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    }
   }, [onHome])
 
   useEffect(() => {
-    const id = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setCountdown((c) => (c > 1 ? c - 1 : 1))
     }, 1000)
-    return () => clearInterval(id)
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current)
+    }
   }, [])
+
+  const clearAutoRedirect = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+      timeoutRef.current = null
+    }
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
+    }
+  }
+
+  const handleRestart = () => {
+    clearAutoRedirect()
+    onRestart()
+  }
+
+  const handleHome = () => {
+    clearAutoRedirect()
+    onHome()
+  }
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]} edges={['top', 'bottom']}>
@@ -66,7 +93,7 @@ export function CompletionScreen({ theme, stats, onRestart, onHome }: Props) {
 
       <TouchableOpacity
         style={styles.restartBtn}
-        onPress={onRestart}
+        onPress={handleRestart}
         accessibilityLabel="Restart timer"
         accessibilityRole="button"
       >
@@ -74,7 +101,7 @@ export function CompletionScreen({ theme, stats, onRestart, onHome }: Props) {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.homeBtn}
-        onPress={onHome}
+        onPress={handleHome}
         accessibilityLabel="Back to home"
         accessibilityRole="button"
       >
@@ -155,8 +182,15 @@ const styles = StyleSheet.create({
   },
   restartBtnText: { fontSize: 18, fontWeight: '700', color: '#fff' },
   homeBtn: {
-    paddingVertical: 14,
+    width: '100%',
+    paddingVertical: 18,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#64748b',
+    backgroundColor: 'rgba(100,116,139,0.15)',
+    alignItems: 'center',
+    marginBottom: 12,
   },
-  homeBtnText: { fontSize: 16, fontWeight: '600', color: '#94a3b8' },
+  homeBtnText: { fontSize: 18, fontWeight: '700', color: '#94a3b8' },
   countdown: { fontSize: 14, marginTop: 16 },
 })

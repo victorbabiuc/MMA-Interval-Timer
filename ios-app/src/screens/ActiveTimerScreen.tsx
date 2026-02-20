@@ -1,5 +1,5 @@
-import React, { useEffect, useCallback } from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native'
+import React, { useEffect, useCallback, useState } from 'react'
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake'
 import type { TimerConfig } from '../lib/types'
@@ -40,26 +40,14 @@ export function ActiveTimerScreen({ config, onComplete, onStop }: Props) {
   }, [timer.isComplete])
 
   const handleEnd = useCallback(() => {
-    Alert.alert(
-      'End workout?',
-      'Your progress will be lost.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'End',
-          style: 'destructive',
-          onPress: () => {
-            const stats = timer.getStats()
-            timer.stop()
-            onStop(stats)
-          },
-        },
-      ]
-    )
+    const stats = timer.getStats()
+    timer.stop()
+    onStop(stats)
   }, [timer, onStop])
 
-  const progress =
-    timer.phaseTotal > 0 ? timer.timeRemaining / timer.phaseTotal : 0
+  // One full revolution per minute: fills over 60s, resets, repeat. Consistent speed.
+  const phaseElapsed = Math.max(0, timer.phaseTotal - timer.timeRemaining)
+  const progress = (phaseElapsed % 60) / 60
 
   const roundLabel = config.perpetualRounds
     ? `Round ${timer.currentRound}`
@@ -67,35 +55,68 @@ export function ActiveTimerScreen({ config, onComplete, onStop }: Props) {
 
   const bgColor = phaseColors[timer.phase] || '#0ea5e9'
 
+  const [dimensions, setDimensions] = useState(() => {
+    const { width, height } = Dimensions.get('window')
+    const size = Math.min(width, height) * 0.9
+    return { ringSize: Math.round(size), timeFontSize: Math.round(size * 0.38) }
+  })
+
+  useEffect(() => {
+    const sub = Dimensions.addEventListener('change', () => {
+      const { width, height } = Dimensions.get('window')
+      const size = Math.min(width, height) * 0.9
+      setDimensions({
+        ringSize: Math.round(size),
+        timeFontSize: Math.round(size * 0.38),
+      })
+    })
+    return () => sub?.remove()
+  }, [])
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: bgColor }]} edges={['top', 'bottom']}>
-      <View style={styles.topBar}>
-        <TouchableOpacity
-          style={styles.iconBtn}
-          onPress={handleEnd}
-          accessibilityLabel="End workout"
-          accessibilityRole="button"
-        >
-          <Text style={styles.iconBtnText}>✕</Text>
-        </TouchableOpacity>
-      </View>
-
       <View style={styles.center}>
-        <ProgressRing progress={progress} />
+        <ProgressRing progress={progress} size={dimensions.ringSize} />
         <View style={styles.timeWrap}>
-          <Text style={styles.timeText}>{formatTime(timer.timeRemaining)}</Text>
+          <Text style={[styles.timeText, { fontSize: dimensions.timeFontSize }]}>
+            {formatTime(timer.timeRemaining)}
+          </Text>
         </View>
       </View>
 
-      <TouchableOpacity
-        style={styles.pauseBtnWrap}
-        onPress={() => (timer.isPaused ? timer.resume() : timer.pause())}
-        accessibilityLabel={timer.isPaused ? 'Resume timer' : 'Pause timer'}
-        accessibilityRole="button"
-      >
-        <Text style={styles.pauseBtnText}>{timer.isPaused ? '▶ Resume' : '❚❚ Pause'}</Text>
-      </TouchableOpacity>
       <Text style={styles.roundLabel}>{roundLabel}</Text>
+
+      {timer.phase === 'countdown' && (
+        <TouchableOpacity
+          style={styles.skipBtn}
+          onPress={() => timer.skipCountdown()}
+          accessibilityLabel="Skip countdown"
+          accessibilityRole="button"
+        >
+          <Text style={styles.skipBtnText}>Skip</Text>
+        </TouchableOpacity>
+      )}
+
+      <View style={styles.bottomButtons}>
+        <TouchableOpacity
+          style={styles.bottomBtn}
+          onPress={handleEnd}
+          accessibilityLabel="End workout"
+          accessibilityRole="button"
+          accessibilityHint="Double-tap to leave and see summary"
+        >
+          <Text style={styles.bottomBtnText}>✕ End</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.bottomBtn}
+          onPress={() => (timer.isPaused ? timer.resume() : timer.pause())}
+          accessibilityLabel={timer.isPaused ? 'Resume timer' : 'Pause timer'}
+          accessibilityRole="button"
+          accessibilityHint={timer.isPaused ? 'Double-tap to resume' : 'Double-tap to pause'}
+        >
+          <Text style={styles.bottomBtnText}>{timer.isPaused ? '▶ Resume' : '❚❚ Pause'}</Text>
+        </TouchableOpacity>
+      </View>
 
       {timer.isPaused && (
         <View style={styles.pauseOverlay}>
@@ -115,21 +136,7 @@ export function ActiveTimerScreen({ config, onComplete, onStop }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingTop: 8 },
-  topBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-  },
-  iconBtn: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: 'rgba(0,0,0,0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  iconBtnText: { fontSize: 24, color: '#fff' },
+  container: { flex: 1 },
   center: {
     flex: 1,
     justifyContent: 'center',
@@ -141,32 +148,50 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   timeText: {
-    fontSize: 72,
     fontWeight: '900',
     color: '#fff',
     fontVariant: ['tabular-nums'],
   },
-  pauseBtnWrap: {
-    alignSelf: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    marginBottom: 8,
-    borderRadius: 28,
-    backgroundColor: 'rgba(0,0,0,0.2)',
-  },
-  pauseBtnText: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#fff',
-  },
   roundLabel: {
-    fontSize: 22,
+    fontSize: 32,
     fontWeight: '700',
     color: '#fff',
     letterSpacing: 1,
-    marginBottom: 40,
+    marginBottom: 12,
     textAlign: 'center',
     alignSelf: 'center',
+  },
+  skipBtn: {
+    alignSelf: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    marginBottom: 16,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.25)',
+  },
+  skipBtnText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#fff',
+  },
+  bottomButtons: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 16,
+    paddingHorizontal: 24,
+    paddingBottom: 40,
+  },
+  bottomBtn: {
+    paddingVertical: 18,
+    paddingHorizontal: 36,
+    borderRadius: 36,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+  },
+  bottomBtnText: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#fff',
   },
   pauseOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -176,24 +201,27 @@ const styles = StyleSheet.create({
   },
   pauseBox: {
     backgroundColor: 'rgba(30,41,59,0.95)',
-    borderRadius: 20,
-    padding: 32,
+    borderRadius: 28,
+    padding: 48,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: 'rgba(71,85,105,0.5)',
+    minWidth: 280,
   },
   pauseTitle: {
-    fontSize: 24,
+    fontSize: 36,
     fontWeight: '800',
     color: '#f1f5f9',
     letterSpacing: 2,
-    marginBottom: 24,
+    marginBottom: 32,
   },
   resumeBtn: {
     backgroundColor: '#10b981',
-    paddingVertical: 14,
-    paddingHorizontal: 32,
-    borderRadius: 12,
+    paddingVertical: 20,
+    paddingHorizontal: 48,
+    borderRadius: 16,
+    width: '100%',
+    alignItems: 'center',
   },
-  resumeBtnText: { fontSize: 18, fontWeight: '700', color: '#fff' },
+  resumeBtnText: { fontSize: 24, fontWeight: '700', color: '#fff' },
 })

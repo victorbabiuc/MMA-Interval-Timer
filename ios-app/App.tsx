@@ -48,7 +48,8 @@ export default function App() {
       staysActiveInBackground: false,
       shouldDuckAndroid: true,
       playThroughEarpieceAndroid: false,
-      interruptionModeIOS: InterruptionModeIOS.DoNotMix,
+      // MixWithOthers so timer sounds route to headphones / current output instead of only speaker
+      interruptionModeIOS: InterruptionModeIOS.MixWithOthers,
     }).catch(() => {})
   }, [])
 

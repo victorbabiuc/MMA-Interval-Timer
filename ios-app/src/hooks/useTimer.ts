@@ -18,7 +18,7 @@ async function ensureChimeLoaded() {
     const { sound } = await Audio.Sound.createAsync({ uri: BEEP_URI })
     cachedChime = sound
     sound.setOnPlaybackStatusUpdate((s) => {
-      if (s.isLoaded && s.didJustFinishAndNotPlaying) sound.setPositionAsync(0)
+      if (s.isLoaded && s.didJustFinish) sound.setPositionAsync(0)
     })
     return sound
   } catch {
@@ -32,7 +32,7 @@ async function ensureBellLoaded() {
     const { sound } = await Audio.Sound.createAsync(OPENING_BELL_ASSET)
     cachedBell = sound
     sound.setOnPlaybackStatusUpdate((s) => {
-      if (s.isLoaded && s.didJustFinishAndNotPlaying) sound.setPositionAsync(0)
+      if (s.isLoaded && s.didJustFinish) sound.setPositionAsync(0)
     })
     return sound
   } catch {
@@ -116,7 +116,7 @@ export function useTimer(config: TimerConfig) {
         if (time === 10 && config.warn10s) playDoubleBeep()
         if (time <= 10 && time > 0 && config.countdownBeeps) playBeep()
         if (time === 0) {
-          if (currentPhase === 'countdown' || currentPhase === 'rest') {
+          if (currentPhase === 'rest') {
             playOpeningBell()
           } else {
             playTripleBeep()
@@ -146,6 +146,8 @@ export function useTimer(config: TimerConfig) {
         timeRef.current = config.roundTime
         setPhase('work')
         setTimeRemaining(config.roundTime)
+        if (config.soundEnabled) playOpeningBell()
+        if (config.vibrationEnabled) vibrate(50)
       } else if (phaseRef.current === 'work') {
         if (!config.perpetualRounds && roundRef.current >= config.rounds) {
           clearTimer()
@@ -157,6 +159,7 @@ export function useTimer(config: TimerConfig) {
         timeRef.current = config.restTime
         setPhase('rest')
         setTimeRemaining(config.restTime)
+        if (config.vibrationEnabled) vibrate(50)
       } else if (phaseRef.current === 'rest') {
         const nextRound = roundRef.current + 1
         roundRef.current = nextRound
@@ -165,6 +168,7 @@ export function useTimer(config: TimerConfig) {
         timeRef.current = config.roundTime
         setPhase('work')
         setTimeRemaining(config.roundTime)
+        if (config.vibrationEnabled) vibrate(50)
       }
     }
   }, [config, clearTimer, triggerAlerts])
@@ -187,6 +191,16 @@ export function useTimer(config: TimerConfig) {
     }
     intervalRef.current = setInterval(tick, 1000)
   }, [clearTimer, tick, config.soundEnabled])
+
+  const skipCountdown = useCallback(() => {
+    if (phaseRef.current !== 'countdown') return
+    phaseRef.current = 'work'
+    timeRef.current = config.roundTime
+    setPhase('work')
+    setTimeRemaining(config.roundTime)
+    if (config.soundEnabled) playOpeningBell()
+    if (config.vibrationEnabled) vibrate([200, 100, 200])
+  }, [config])
 
   const pause = useCallback(() => {
     clearTimer()
@@ -241,6 +255,7 @@ export function useTimer(config: TimerConfig) {
     isComplete,
     totalElapsed,
     start,
+    skipCountdown,
     pause,
     resume,
     stop,

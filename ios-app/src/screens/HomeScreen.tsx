@@ -6,6 +6,7 @@ import {
   ScrollView,
   StyleSheet,
   Alert,
+  Dimensions,
 } from 'react-native'
 import { Swipeable } from 'react-native-gesture-handler'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -20,12 +21,19 @@ type Props = {
   onDeleteSavedPreset: (id: string) => void
 }
 
+const PRESET_ROW_PADDING = 40
+const PRESET_GAP = 12
+
 export function HomeScreen({
   theme,
   savedPresets,
   onSelectPreset,
   onDeleteSavedPreset,
 }: Props) {
+  const { width } = Dimensions.get('window')
+  const presetCardSize = Math.floor((width - PRESET_ROW_PADDING - PRESET_GAP * 2) / 3)
+  const presetGap = PRESET_GAP
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]} edges={['top', 'bottom']}>
       {/* Top half: vertically scrollable (title + subtitle + preset boxes) */}
@@ -38,30 +46,30 @@ export function HomeScreen({
           <Text style={[styles.title, { color: theme.textPrimary }]}>MMA INTERVAL TIMER</Text>
           <Text style={[styles.subtitle, { color: theme.textSecondary }]}>Choose your sport or create custom</Text>
 
-          <View style={styles.presetRow}>
-            <TouchableOpacity
-              style={[styles.presetCard, { backgroundColor: theme.cardBg, borderColor: theme.cardBorder }]}
-              onPress={() => onSelectPreset(DEFAULT_CUSTOM)}
-              activeOpacity={0.8}
-              accessibilityLabel={`Select ${DEFAULT_CUSTOM.name}`}
-              accessibilityRole="button"
-            >
-              <Text style={styles.presetIcon}>{DEFAULT_CUSTOM.icon}</Text>
-              <Text style={[styles.presetName, { color: theme.textPrimary }]}>{DEFAULT_CUSTOM.name}</Text>
-            </TouchableOpacity>
+          <View style={[styles.presetRow, { gap: presetGap }]}>
             {ORDERED_PRESETS.map((preset) => (
               <TouchableOpacity
                 key={preset.id}
-                style={[styles.presetCard, { backgroundColor: theme.cardBg, borderColor: theme.cardBorder }]}
+                style={[styles.presetCard, { width: presetCardSize, height: presetCardSize, backgroundColor: theme.cardBg, borderColor: theme.cardBorder }]}
                 onPress={() => onSelectPreset(preset)}
                 activeOpacity={0.8}
                 accessibilityLabel={`Select ${preset.name}`}
                 accessibilityRole="button"
               >
                 <Text style={styles.presetIcon}>{preset.icon}</Text>
-                <Text style={[styles.presetName, { color: theme.textPrimary }]}>{preset.name}</Text>
+                <Text style={[styles.presetName, { color: theme.textPrimary }]} numberOfLines={2}>{preset.name}</Text>
               </TouchableOpacity>
             ))}
+            <TouchableOpacity
+              style={[styles.presetCard, { width: presetCardSize, height: presetCardSize, backgroundColor: theme.cardBg, borderColor: theme.cardBorder }]}
+              onPress={() => onSelectPreset(DEFAULT_CUSTOM)}
+              activeOpacity={0.8}
+              accessibilityLabel={`Select ${DEFAULT_CUSTOM.name}`}
+              accessibilityRole="button"
+            >
+              <Text style={styles.presetIcon}>{DEFAULT_CUSTOM.icon}</Text>
+              <Text style={[styles.presetName, { color: theme.textPrimary }]} numberOfLines={2}>{DEFAULT_CUSTOM.name}</Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </View>
@@ -141,24 +149,21 @@ const styles = StyleSheet.create({
   presetRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
     marginTop: 16,
     paddingVertical: 4,
     justifyContent: 'flex-start',
   },
   presetCard: {
-    width: 88,
-    height: 88,
-    borderRadius: 12,
+    borderRadius: 14,
     backgroundColor: 'rgba(30,41,59,0.8)',
     borderWidth: 1,
     borderColor: 'rgba(71,85,105,0.6)',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  presetIcon: { fontSize: 28 },
+  presetIcon: { fontSize: 32 },
   presetName: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '700',
     color: '#f1f5f9',
     marginTop: 4,

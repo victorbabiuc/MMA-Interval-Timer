@@ -79,7 +79,10 @@ export function ConfigScreen({
           </TouchableOpacity>
           <Text style={[styles.headerTitle, { color: theme.textPrimary }]}>Configure Timer</Text>
           <TouchableOpacity
-            onPress={() => setShowSaveModal(true)}
+            onPress={() => {
+              setSaveName(config.id === 'custom' ? '' : config.name)
+              setShowSaveModal(true)
+            }}
             style={styles.headerBtn}
             accessibilityLabel="Save preset"
             accessibilityRole="button"
@@ -90,6 +93,12 @@ export function ConfigScreen({
 
         <Text style={styles.presetIcon}>{config.icon}</Text>
         <Text style={[styles.presetName, { color: theme.textPrimary }]}>{config.name}</Text>
+
+        <Text style={[styles.totalDuration, { color: theme.textSecondary }]}>
+          {config.perpetualRounds
+            ? 'Total: Unlimited'
+            : `Total: ~${Math.round((config.rounds * config.roundTime + Math.max(0, config.rounds - 1) * config.restTime) / 60)} min`}
+        </Text>
 
         {!config.perpetualRounds && (
           <IncControl
@@ -162,7 +171,13 @@ export function ConfigScreen({
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={[styles.savePresetBtn, { borderColor: theme.cardBorder }]} onPress={() => setShowSaveModal(true)}>
+        <TouchableOpacity
+          style={[styles.savePresetBtn, { borderColor: theme.cardBorder }]}
+          onPress={() => {
+            setSaveName(config.id === 'custom' ? '' : config.name)
+            setShowSaveModal(true)
+          }}
+        >
           <Text style={[styles.savePresetText, { color: theme.textSecondary }]}>Save as Preset</Text>
         </TouchableOpacity>
 
@@ -171,6 +186,7 @@ export function ConfigScreen({
           onPress={onStart}
           accessibilityLabel="Start workout"
           accessibilityRole="button"
+          accessibilityHint="Double-tap to begin the timer"
         >
           <Text style={styles.startBtnText}>START WORKOUT →</Text>
         </TouchableOpacity>
@@ -243,7 +259,13 @@ const styles = StyleSheet.create({
     color: '#f1f5f9',
     textAlign: 'center',
     marginTop: 4,
-    marginBottom: 10,
+    marginBottom: 4,
+  },
+  totalDuration: {
+    fontSize: 15,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: 14,
   },
   incRow: {
     marginBottom: 8,
@@ -256,14 +278,14 @@ const styles = StyleSheet.create({
   incLabel: { fontSize: 12, color: '#94a3b8', marginBottom: 6 },
   incButtons: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   incBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 10,
+    width: 52,
+    height: 52,
+    borderRadius: 12,
     backgroundColor: 'rgba(71,85,105,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  incBtnText: { fontSize: 22, color: '#f1f5f9', fontWeight: '600' },
+  incBtnText: { fontSize: 26, color: '#f1f5f9', fontWeight: '600' },
   incValue: { fontSize: 18, fontWeight: '700', color: '#f1f5f9', fontVariant: ['tabular-nums'] },
   toggleBlock: {
     marginTop: 4,

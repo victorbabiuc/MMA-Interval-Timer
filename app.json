@@ -1,0 +1,15 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "22ab6664-04b8-41e9-9364-ffbc93482d88"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.intervaltimer.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    }
+  }
+}
