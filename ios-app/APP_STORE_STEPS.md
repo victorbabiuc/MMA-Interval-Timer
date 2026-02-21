@@ -206,7 +206,8 @@ Apple will review the app (often 24–48 hours). Once approved, the app goes **R
 
 ## If something doesn’t match
 
-- **Bundle ID** in App Store Connect must match `app.json` → `expo.ios.bundleIdentifier` (e.g. `com.intervaltimer.app`).  
+- **Bundle ID** in App Store Connect must match `app.json` → `expo.ios.bundleIdentifier` (e.g. `com.mmaintervaltimerpro.app`).
+- **Version:** Keep `appVersionSource: "local"` in `eas.json` and bump `expo.version` in `app.json` for each new submission to avoid "You've already submitted this version" (see **Releasing a new version** below).  
 - **App name** in App Store Connect is what users see; it’s reserved as soon as you create the app (Step 5).
 
 For more detail on EAS and credentials, see [Expo’s docs](https://docs.expo.dev/submit/ios/).
@@ -221,3 +222,4 @@ For more detail on EAS and credentials, see [Expo’s docs](https://docs.expo.de
 | **Privacy policy** | `docs/privacy.html` – host for Privacy Policy URL (e.g. GitHub Pages from /docs) |
 | **App Store text** | **APP_STORE_COPY.md** – description, subtitle, keywords, What’s New, support URL |
 | **Screenshot steps** | **SCREENSHOTS.md** – how to capture simulator screenshots for each device size |
+| **New version / release** | **EAS_RELEASE_NOTES.md** – run from ios-app, version bump, appVersionSource local, avoid "already submitted" |

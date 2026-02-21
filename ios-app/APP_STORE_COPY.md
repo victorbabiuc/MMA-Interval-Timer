@@ -42,7 +42,9 @@ Ideal for boxing, martial arts, HIIT, and any interval training.
 
 ## What’s New (for this version)
 
-**Initial release.** Interval timer for boxing, HIIT, martial arts, and more. Customizable work and rest rounds, sound alerts, and saved presets.
+**v2.0.2:** Bug fixes and improvements. Smoother progress ring animation, audio fixes, and UX polish.
+
+**v1.0 (initial):** Interval timer for boxing, HIIT, martial arts, and more. Customizable work and rest rounds, sound alerts, and saved presets.
 
 ---
 

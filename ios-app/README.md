@@ -28,7 +28,7 @@ Interval timer for MMA, boxing, and workouts. Built with **Expo (React Native)**
 
 **Not hearing the timer beep?** Turn volume up and silent switch off; first run needs network for the chime. See **SOUNDS.md** for details.
 
-**App Store.** Step-by-step: **APP_STORE_STEPS.md**. Ready-to-paste text (description, keywords, privacy): **APP_STORE_COPY.md**. Screenshots: **SCREENSHOTS.md**. Short checklist: **LAUNCH.md**.
+**App Store.** Step-by-step: **APP_STORE_STEPS.md**. For new releases: **EAS_RELEASE_NOTES.md**. Ready-to-paste text: **APP_STORE_COPY.md**. Screenshots: **SCREENSHOTS.md**. Short checklist: **LAUNCH.md**.
 
 ## Project layout
 

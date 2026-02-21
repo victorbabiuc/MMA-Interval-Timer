@@ -6,7 +6,7 @@
       }
     },
     "ios": {
-      "bundleIdentifier": "com.intervaltimer.app",
+      "bundleIdentifier": "com.mmaintervaltimerpro.app",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
